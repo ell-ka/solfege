@@ -26,8 +26,9 @@ let activeGroup  = null;
 let activeLedger = null;
 
 // ── Hint state ────────────────────────────────────────────────────────────────
-let hintLabel          = null;   // SVG <text> element showing the note name
+let hintLabel           = null;  // SVG <text> element showing the note name
 let hintHighlightedLine = null;  // SVG <line> element recolored by hint
+let hintKeyEl           = null;  // piano key highlighted by hint
 
 // ── Note lookup helpers ───────────────────────────────────────────────────────
 function buildDef(name) {
@@ -78,6 +79,10 @@ function clearHint() {
     hintHighlightedLine.setAttribute('stroke', '#4a4a88');
     hintHighlightedLine = null;
   }
+  if (hintKeyEl) {
+    hintKeyEl.classList.remove('hint');
+    hintKeyEl = null;
+  }
   hintBtn.disabled = false;
 }
 
@@ -104,21 +109,27 @@ function hint() {
     }
   }
 
-  // 3. Show note name label in SVG
-  const cy = STAFF_TOP + def.step * HALF_STEP;
-  const staffMidY = STAFF_TOP + 2 * LINE_GAP; // middle of the staff
-  const labelY = cy > staffMidY ? cy - 18 : cy + 22;
-
+  // 3. Show note name label below the staff (always fixed position)
+  const labelY = STAFF_TOP + 4 * LINE_GAP + 20;
   const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
   label.setAttribute('x', String(NOTE_CX));
   label.setAttribute('y', String(labelY));
   label.setAttribute('fill', '#818cf8');
-  label.setAttribute('font-size', '13');
+  label.setAttribute('font-size', '14');
+  label.setAttribute('font-weight', '600');
   label.setAttribute('font-family', '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif');
   label.setAttribute('text-anchor', 'middle');
   label.textContent = displayName(current);
   staffSVG.appendChild(label);
   hintLabel = label;
+
+  // 4. Highlight the corresponding piano key
+  const hintKey = getKey(current);
+  if (hintKey) {
+    hintKey.classList.add('hint');
+    hintHighlightedLine = hintHighlightedLine; // keep line ref
+    hintKeyEl = hintKey;
+  }
 }
 
 hintBtn.addEventListener('click', hint);
