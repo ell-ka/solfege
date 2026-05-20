@@ -3,6 +3,7 @@
 import { pianoGroupsTreble, pianoGroupsBass } from './config.js';
 import { clefState } from './deck.js';
 import { ensureAudioCtx } from './audio.js';
+import { displayName } from './notation.js';
 
 // Track which extra groups have been added to the piano
 let addedGroupsTreble = new Set();
@@ -57,7 +58,7 @@ export function rebuildPiano(keysEl, activeClef, onAnswer) {
   const base = basePianoNotes(activeClef);
   for (const name of base) {
     const btn = makeKeyEl(name, onAnswer);
-    btn.textContent = baseLabel(name);
+    btn.textContent = displayName(name);
     keysEl.appendChild(btn);
   }
 
@@ -79,7 +80,7 @@ export function expandPiano(keysEl, activeClef, onAnswer, silent = false) {
         addedGroupsTreble.add(id);
         for (const name of group.notes) {
           const btn = makeKeyEl(name, onAnswer);
-          btn.textContent = name; // always show suffix for extended keys
+          btn.textContent = displayName(name);
           if (!silent) btn.classList.add('key-new');
           keysEl.appendChild(btn);
         }
@@ -96,7 +97,7 @@ export function expandPiano(keysEl, activeClef, onAnswer, silent = false) {
         for (let i = group.notes.length - 1; i >= 0; i--) {
           const name = group.notes[i];
           const btn  = makeKeyEl(name, onAnswer);
-          btn.textContent = name;
+          btn.textContent = displayName(name);
           if (!silent) btn.classList.add('key-new');
           keysEl.insertBefore(btn, firstKey);
         }
