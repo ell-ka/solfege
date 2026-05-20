@@ -204,6 +204,33 @@ h1 {
   letter-spacing: 0.18em;
 }
 
+/* ── Hint button ─────────────────────────────────────────────── */
+.hint-row {
+  display: flex;
+  justify-content: center;
+}
+
+#hint-btn {
+  background: transparent;
+  border: 1px solid #1e1e32;
+  border-radius: 8px;
+  color: #44446a;
+  font-family: inherit;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  padding: 5px 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+#hint-btn:hover:not(:disabled) {
+  border-color: #6366f1;
+  color: #818cf8;
+}
+#hint-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 /* ── Simon Says button ───────────────────────────────────────── */
 #simon-btn {
   background: transparent;
