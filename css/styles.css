@@ -1,0 +1,376 @@
+/* Styles globaux du jeu de solfège */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  background: #0d0d14;
+  color: #e2e2f0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
+}
+
+h1 {
+  font-size: 1rem;
+  font-weight: 300;
+  letter-spacing: 0.55em;
+  text-transform: uppercase;
+  color: #55558a;
+}
+
+/* ── Clef toggle ─────────────────────────────────────────────── */
+.clef-toggle {
+  display: flex;
+  gap: 4px;
+  background: #11111c;
+  border: 1px solid #1e1e32;
+  border-radius: 99px;
+  padding: 4px;
+}
+
+.clef-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 99px;
+  color: #55558a;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  padding: 5px 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+.clef-btn.active {
+  border-color: #6366f1;
+  color: #a5b4fc;
+  background: rgba(99, 102, 241, 0.12);
+}
+.clef-btn:hover:not(.active) {
+  color: #8080b8;
+}
+
+.staff-card {
+  background: #11111c;
+  border: 1px solid #1e1e32;
+  border-radius: 20px;
+  padding: 24px 48px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+}
+
+#feedback {
+  height: 26px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-align: center;
+  transition: opacity 0.15s;
+}
+#feedback.correct { color: #4ade80; }
+#feedback.wrong   { color: #f87171; }
+
+/* ── Progress bar ────────────────────────────────────────────── */
+.progress-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 400px;
+}
+
+.progress-label {
+  font-size: 0.72rem;
+  color: #55558a;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+}
+.progress-label.ready-unlock {
+  color: #818cf8;
+}
+
+.progress-track {
+  width: 100%;
+  height: 4px;
+  background: #1e1e32;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #818cf8);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.progress-fill.flash-unlock {
+  animation: unlockFlash 0.6s ease;
+}
+
+/* ── Unlock notification ─────────────────────────────────────── */
+#unlock-toast {
+  position: fixed;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-80px);
+  background: #1e1e32;
+  border: 1px solid #6366f1;
+  border-radius: 12px;
+  padding: 10px 22px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #a5b4fc;
+  letter-spacing: 0.06em;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+#unlock-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* ── Piano ───────────────────────────────────────────────────── */
+.piano-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.keys {
+  display: flex;
+  gap: 4px;
+}
+
+.key {
+  width: 58px;
+  height: 152px;
+  background: linear-gradient(180deg, #e8e4db 0%, #f4f0e6 100%);
+  border: 1px solid #b0ada4;
+  border-radius: 0 0 10px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 12px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #5a5870;
+  user-select: none;
+  transition: background 0.07s, transform 0.06s, box-shadow 0.06s, opacity 0.2s;
+  box-shadow: 0 4px 0 #8a8880, 0 6px 12px rgba(0,0,0,0.4);
+}
+.key:hover {
+  background: linear-gradient(180deg, #dedad0 0%, #eae5da 100%);
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #8a8880, 0 4px 8px rgba(0,0,0,0.4);
+}
+.key.correct {
+  background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%) !important;
+  color: #fff;
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #16a34a, 0 4px 8px rgba(0,0,0,0.3) !important;
+}
+.key.wrong {
+  background: linear-gradient(180deg, #f87171 0%, #ef4444 100%) !important;
+  color: #fff;
+  box-shadow: 0 4px 0 #b91c1c, 0 6px 12px rgba(0,0,0,0.3) !important;
+}
+.key.hint {
+  background: linear-gradient(180deg, #818cf8 0%, #6366f1 100%) !important;
+  color: #fff;
+  box-shadow: 0 4px 0 #4338ca, 0 6px 12px rgba(0,0,0,0.3) !important;
+}
+.key.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.key.key-new {
+  animation: keyFadeIn 0.3s ease forwards;
+}
+
+.score {
+  font-size: 0.8rem;
+  color: #3a3a6a;
+  letter-spacing: 0.18em;
+}
+
+/* ── Simon Says button ───────────────────────────────────────── */
+#simon-btn {
+  background: transparent;
+  border: 1px solid #2a2a4a;
+  border-radius: 10px;
+  color: #55558a;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+#simon-btn:hover {
+  border-color: #6366f1;
+  color: #a5b4fc;
+  background: rgba(99, 102, 241, 0.08);
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
+}
+
+/* ── Simon Says overlay ──────────────────────────────────────── */
+#simon-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #0d0d14;
+  z-index: 50;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+}
+#simon-overlay.active {
+  display: flex;
+}
+
+.simon-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+#simon-back {
+  background: transparent;
+  border: 1px solid #2a2a4a;
+  border-radius: 8px;
+  color: #55558a;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+#simon-back:hover {
+  border-color: #6366f1;
+  color: #a5b4fc;
+}
+
+.simon-title {
+  font-size: 0.9rem;
+  font-weight: 300;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: #55558a;
+}
+
+#simon-status {
+  height: 28px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+#simon-status.listening { color: #6b6b9a; }
+#simon-status.your-turn { color: #818cf8; }
+#simon-status.gameover  { color: #f87171; }
+
+#simon-progress-text {
+  height: 20px;
+  font-size: 0.78rem;
+  color: #3a3a6a;
+  letter-spacing: 0.14em;
+  text-align: center;
+}
+
+#simon-gameover-panel {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+#simon-gameover-panel.active {
+  display: flex;
+}
+
+.simon-score-display {
+  font-size: 2.4rem;
+  font-weight: 200;
+  color: #e2e2f0;
+  letter-spacing: 0.05em;
+}
+.simon-score-label {
+  font-size: 0.72rem;
+  color: #55558a;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-top: -14px;
+}
+
+#simon-replay-btn {
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 10px 28px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+#simon-replay-btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+#simon-game-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+/* ── Note animations (CSS keyframes) ────────────────────────── */
+@keyframes noteAppear {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes notePulse {
+  0%   { filter: drop-shadow(0 0 0px #4ade80); }
+  40%  { filter: drop-shadow(0 0 10px #4ade80); }
+  100% { filter: drop-shadow(0 0 4px #4ade80); }
+}
+
+@keyframes unlockFlash {
+  0%   { filter: brightness(1); }
+  30%  { filter: brightness(2.2); }
+  60%  { filter: brightness(1.4); }
+  100% { filter: brightness(1); }
+}
+
+@keyframes keyFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.note-appear {
+  animation: noteAppear 0.15s ease forwards;
+}
+
+.note-pulse {
+  animation: notePulse 0.3s ease;
+}

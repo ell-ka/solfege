@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solfège</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<h1>Solfège</h1>
+
+<div class="clef-toggle">
+  <button class="clef-btn active" data-clef="treble">Clé de Sol</button>
+  <button class="clef-btn"        data-clef="bass">Clé de Fa</button>
+  <button class="clef-btn"        data-clef="both">Les deux</button>
+</div>
+
+<div class="staff-card">
+  <svg id="staff" width="400" height="165" viewBox="0 -10 400 165"></svg>
+</div>
+
+<div id="feedback"></div>
+
+<div class="progress-section">
+  <div class="progress-label" id="progress-label">Prochaine note : Fa</div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+  </div>
+</div>
+
+<div class="piano-section">
+  <div class="keys" id="keys"></div>
+  <div class="score" id="score">0 / 0</div>
+</div>
+
+<button id="simon-btn">Simon Says</button>
+
+<div id="unlock-toast"></div>
+
+<!-- ── Simon Says overlay ───────────────────────────────────────── -->
+<div id="simon-overlay">
+  <div class="simon-header">
+    <button id="simon-back">← Retour</button>
+    <div class="simon-title">Simon Says</div>
+  </div>
+
+  <div class="staff-card">
+    <svg id="simon-staff" width="400" height="165" viewBox="0 -10 400 165"></svg>
+  </div>
+
+  <div id="simon-status" class="listening">Écoute...</div>
+  <div id="simon-progress-text"></div>
+
+  <div id="simon-gameover-panel">
+    <div class="simon-score-display" id="simon-score-display">0</div>
+    <div class="simon-score-label">notes</div>
+    <button id="simon-replay-btn">Rejouer</button>
+  </div>
+
+  <div id="simon-game-area">
+    <div class="keys" id="simon-keys"></div>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
