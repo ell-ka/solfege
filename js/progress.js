@@ -2,6 +2,7 @@
 
 import { allNotesForClef } from './deck.js';
 import { baseLabel } from './piano.js';
+import { displayName } from './notation.js';
 
 export function updateProgressBar(activeClef, clefState) {
   const fill  = document.getElementById('progress-fill');
@@ -35,7 +36,7 @@ export function updateProgressBar(activeClef, clefState) {
 
   // Label
   if (pct >= 80) {
-    label.textContent = `Prête à débloquer : ${baseLabel(nextNote.name)} !`;
+    label.textContent = `Prête à débloquer : ${displayName(nextNote.name)} !`;
     label.classList.add('ready-unlock');
   } else {
     const displayCount = count > 0 ? count : 0;
@@ -46,7 +47,7 @@ export function updateProgressBar(activeClef, clefState) {
 
 export function showUnlockToast(noteName) {
   const toast = document.getElementById('unlock-toast');
-  toast.textContent = `Nouvelle note : ${baseLabel(noteName)} !`;
+  toast.textContent = `Nouvelle note : ${displayName(noteName)} !`;
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 2200);
 }

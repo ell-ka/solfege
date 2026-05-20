@@ -68,6 +68,14 @@ export const NOTE_FREQ = {
   'Ré4':  293.66,
 };
 
+// Mapping French → Anglo note names
+export const ANGLO_MAP = {
+  'Do':   'C',  'Ré':   'D',  'Mi':   'E',  'Fa':   'F',  'Sol':  'G',  'La':   'A',  'Si':   'B',
+  'Do3':  'C3', 'Ré3':  'D3', 'Mi3':  'E3', 'Fa3':  'F3', 'Sol3': 'G3', 'La3':  'A3', 'Si3':  'B3',
+  'Do5':  'C5', 'Ré5':  'D5', 'Mi5':  'E5', 'Fa5':  'F5', 'Sol5': 'G5',
+  'Sol2': 'G2', 'La2':  'A2', 'Si2':  'B2', 'Do4':  'C4', 'Ré4':  'D4',
+};
+
 // Piano extension groups (notes unlocked progressively)
 export const pianoGroupsTreble = [
   { notes: ['Do5', 'Ré5', 'Mi5'] },

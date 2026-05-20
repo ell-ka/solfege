@@ -1,6 +1,7 @@
 // Boucle principale : initialisation et liaison de tous les modules
 
-import { ALL_NOTES_TREBLE, ALL_NOTES_BASS } from './config.js';
+import { ALL_NOTES_TREBLE, ALL_NOTES_BASS, STAFF_TOP, LINE_GAP, HALF_STEP, NOTE_CX } from './config.js';
+import { displayName, setNotation, getNotation } from './notation.js';
 import { playNote, ensureAudioCtx } from './audio.js';
 import { drawStaffLines, renderNote } from './staff.js';
 import {
@@ -23,6 +24,10 @@ const keysEl     = document.getElementById('keys');
 
 let activeGroup  = null;
 let activeLedger = null;
+
+// ── Hint state ────────────────────────────────────────────────────────────────
+let hintLabel          = null;   // SVG <text> element showing the note name
+let hintHighlightedLine = null;  // SVG <line> element recolored by hint
 
 // ── Note lookup helpers ───────────────────────────────────────────────────────
 function buildDef(name) {
@@ -60,6 +65,63 @@ function pulseAndRemoveNote(cb) {
   activeGroup  = null;
   activeLedger = null;
 }
+
+// ── Hint ──────────────────────────────────────────────────────────────────────
+const hintBtn = document.getElementById('hint-btn');
+
+function clearHint() {
+  if (hintLabel) {
+    hintLabel.remove();
+    hintLabel = null;
+  }
+  if (hintHighlightedLine) {
+    hintHighlightedLine.setAttribute('stroke', '#4a4a88');
+    hintHighlightedLine = null;
+  }
+  hintBtn.disabled = false;
+}
+
+function hint() {
+  if (!current || hintBtn.disabled) return;
+
+  hintBtn.disabled = true;
+
+  // 1. Push a false into history (visual progress setback, no deck penalty)
+  clefState[activeClef].history.push(false);
+  if (clefState[activeClef].history.length > 10) clefState[activeClef].history.shift();
+  updateProgressBar(activeClef, clefState);
+
+  const def = buildDef(current);
+
+  // 2. Highlight the staff line if the note sits on one (step even, 0-8)
+  const onLine = def.step % 2 === 0 && def.step >= 0 && def.step <= 8;
+  if (onLine) {
+    const lineIdx = def.step / 2;
+    const lines = staffSVG.querySelectorAll('line');
+    if (lines[lineIdx]) {
+      lines[lineIdx].setAttribute('stroke', '#818cf8');
+      hintHighlightedLine = lines[lineIdx];
+    }
+  }
+
+  // 3. Show note name label in SVG
+  const cy = STAFF_TOP + def.step * HALF_STEP;
+  const staffMidY = STAFF_TOP + 2 * LINE_GAP; // middle of the staff
+  const labelY = cy > staffMidY ? cy - 18 : cy + 22;
+
+  const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  label.setAttribute('x', String(NOTE_CX));
+  label.setAttribute('y', String(labelY));
+  label.setAttribute('fill', '#818cf8');
+  label.setAttribute('font-size', '13');
+  label.setAttribute('font-family', '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif');
+  label.setAttribute('text-anchor', 'middle');
+  label.textContent = displayName(current);
+  staffSVG.appendChild(label);
+  hintLabel = label;
+}
+
+hintBtn.addEventListener('click', hint);
 
 // ── Progressive unlock ────────────────────────────────────────────────────────
 function checkUnlock() {
@@ -118,6 +180,7 @@ function chooseClefForRound() {
 }
 
 function next() {
+  clearHint();
   busy = false;
   chooseClefForRound();
   const card = nextCard(activeClef);
@@ -147,7 +210,7 @@ function answer(noteName) {
     pulseAndRemoveNote();
     setTimeout(() => { fb.textContent = ''; fb.className = ''; next(); }, 680);
   } else {
-    fb.textContent = `Non — c'était ${baseLabel(current)}`;
+    fb.textContent = `Non — c'était ${displayName(current)}`;
     fb.className   = 'wrong';
     if (clickedKey) flash(clickedKey, 'wrong', 1100);
     if (currentKey) flash(currentKey, 'hint',  1100);
@@ -163,7 +226,7 @@ function applyClefSetting(clef) {
   currentClefSetting = clef;
   localStorage.setItem('solfege-clef', clef);
 
-  document.querySelectorAll('.clef-btn').forEach(btn => {
+  document.querySelectorAll('[data-clef]').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.clef === clef);
   });
 
@@ -176,11 +239,28 @@ function applyClefSetting(clef) {
   updateProgressBar(activeClef, clefState);
 }
 
-document.querySelectorAll('.clef-btn').forEach(btn => {
+document.querySelectorAll('[data-clef]').forEach(btn => {
   btn.addEventListener('click', () => {
     if (btn.classList.contains('active')) return;
     applyClefSetting(btn.dataset.clef);
     next();
+  });
+});
+
+// ── Notation toggle UI ────────────────────────────────────────────────────────
+function applyNotationSetting(value) {
+  setNotation(value);
+  document.querySelectorAll('.notation-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.notation === value);
+  });
+  // Rebuild piano labels in place
+  rebuildPiano(keysEl, activeClef, answer);
+}
+
+document.querySelectorAll('.notation-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.classList.contains('active')) return;
+    applyNotationSetting(btn.dataset.notation);
   });
 });
 
@@ -198,6 +278,9 @@ initSimonButtons(
 // ── Init ──────────────────────────────────────────────────────────────────────
 loadProgress('treble');
 loadProgress('bass');
+
+// Apply saved notation (button state only — piano is built by applyClefSetting below)
+applyNotationSetting(getNotation());
 
 applyClefSetting(currentClefSetting);
 

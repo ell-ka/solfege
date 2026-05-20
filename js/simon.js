@@ -4,6 +4,7 @@ import { drawStaffLines, renderNote } from './staff.js';
 import { playNote, ensureAudioCtx } from './audio.js';
 import { clefState } from './deck.js';
 import { basePianoNotes, baseLabel, getKeyInContainer } from './piano.js';
+import { displayName } from './notation.js';
 import { pianoGroupsTreble } from './config.js';
 
 // ── Utility ───────────────────────────────────────────────────────────────────
@@ -70,7 +71,7 @@ export function buildSimonKeys(activeClef, buildDef) {
   for (const name of base) {
     const btn = document.createElement('div');
     btn.className    = 'key';
-    btn.textContent  = baseLabel(name);
+    btn.textContent  = displayName(name);
     btn.dataset.note = name;
     btn.addEventListener('click', () => {
       ensureAudioCtx();
@@ -87,7 +88,7 @@ export function buildSimonKeys(activeClef, buildDef) {
         for (const name of group.notes) {
           const btn = document.createElement('div');
           btn.className    = 'key';
-          btn.textContent  = name;
+          btn.textContent  = displayName(name);
           btn.dataset.note = name;
           btn.addEventListener('click', () => {
             ensureAudioCtx();
