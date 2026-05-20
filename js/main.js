@@ -259,10 +259,20 @@ document.querySelectorAll('[data-clef]').forEach(btn => {
 });
 
 // ── Notation toggle UI ────────────────────────────────────────────────────────
+const CLEF_LABELS = {
+  french: { treble: 'Clé de Sol', bass: 'Clé de Fa', both: 'Les deux' },
+  anglo:  { treble: 'Treble',     bass: 'Bass',       both: 'Both'     },
+};
+
 function applyNotationSetting(value) {
   setNotation(value);
   document.querySelectorAll('.notation-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.notation === value);
+  });
+  // Update clef toggle labels to match notation
+  const labels = CLEF_LABELS[value] || CLEF_LABELS.french;
+  document.querySelectorAll('[data-clef]').forEach(btn => {
+    btn.textContent = labels[btn.dataset.clef] ?? btn.textContent;
   });
   // Rebuild piano labels in place
   rebuildPiano(keysEl, activeClef, answer);
